@@ -61,6 +61,14 @@ async def get_user(pool: asyncpg.Pool, telegram_id: int):
     )
 
 
+async def get_users(pool: asyncpg.Pool):
+    """Получить пользоватей"""
+
+    return await pool.fetch(
+        "SELECT * FROM users "
+    )
+
+
 #----------ТОВАРЫ----------
 
 

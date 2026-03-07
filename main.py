@@ -9,7 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from config import BOT_TOKEN, ADMIN_ID, DATABASE_URL
 from database.database import init_db
 from handlers.user_handlers import user_router
-
+from middlewares.reg_middleware import RegisterMiddleware
 
 logging.basicConfig(
     level=logging.INFO,
@@ -29,16 +29,22 @@ dp = Dispatcher(storage=MemoryStorage())
 async def on_startup():
     logger.info("Бот запускается...")
     pool = await asyncpg.create_pool(DATABASE_URL)
+
     await init_db(pool)
+
     dp["pool"] = pool
+    dp.update.middleware(RegisterMiddleware())
+    
     logger.info("БД подключена")
 
 
 async def on_shutdown():
     logger.info("Бот отключается...")
     pool = dp.get("pool")
+
     if pool:
         await pool.close()
+
     logger.info("БД отключена")
 
 
