@@ -6,19 +6,10 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from config import BOT_TOKEN, ADMIN_ID, DATABASE_URL
-from database.database import init_db
+from config import BOT_TOKEN, DATABASE_URL, LOG_PATH
+from database import init_db
 from handlers.user_handlers import user_router
 from middlewares.reg_middleware import RegisterMiddleware
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler("bot_logs.log",encoding="utf-8")
-    ]
-)
  
 logger = logging.getLogger(__name__)
 
@@ -26,6 +17,7 @@ bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 dp = Dispatcher(storage=MemoryStorage())
 
 
+@dp.startup()
 async def on_startup():
     logger.info("Бот запускается...")
     pool = await asyncpg.create_pool(DATABASE_URL)
@@ -38,6 +30,7 @@ async def on_startup():
     logger.info("БД подключена")
 
 
+@dp.shutdown()
 async def on_shutdown():
     logger.info("Бот отключается...")
     pool = dp.get("pool")
@@ -50,10 +43,18 @@ async def on_shutdown():
 
 async def main():
 
-    dp.startup.register(on_startup)
-    dp.shutdown.register(on_shutdown)
+    logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(LOG_PATH,encoding="utf-8")
+        ]
+    )
     
     dp.include_router(user_router)
+
+
     await dp.start_polling(bot)
 
 

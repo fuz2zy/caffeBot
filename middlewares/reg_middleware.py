@@ -1,9 +1,9 @@
 from aiogram import BaseMiddleware
 from aiogram.types import User
 
-from database.database import add_user
+from database import add_user
 
-import logging
+
 class RegisterMiddleware(BaseMiddleware):
     async def __call__(self, handler, event, data):
         
