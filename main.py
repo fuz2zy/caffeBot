@@ -16,11 +16,6 @@ logger = logging.getLogger(__name__)
 async def on_startup():
     logger.info("Бот запускается...")
     
-    pool = await asyncpg.create_pool(DATABASE_URL)
-    
-    loader.db = await Database(pool)
-    loader.db.init_db()
-    
     await loader.db.add_product("Бургер", 10, "Фаст-Фуд", "AgACAgIAAxkBAANFaa6q4dpohMpw8ZXJm6ETjKdYUBUAAn4Vaxt3mXlJklDNS1HNAkwBAAMCAAN4AAM6BA", "это бургер")
     await loader.db.add_product("Нагеттсы", 5, "Фаст-Фуд", "AgACAgIAAxkBAAM9aa6qrgN2891H99UFWVuCK7KW0kgAAnsVaxt3mXlJv-nQVifsZ9EBAAMCAAN5AAM6BA", "Это нагеттсы")
     await loader.db.add_product("Картошка фри", 7, "Фаст-Фуд", "AgACAgIAAxkBAAM-aa6qrpW2kVcI3TA0NqKYdXxs0tYAAnwVaxt3mXlJ5ht2v4VE-qYBAAMCAAN4AAM6BA", "Это картошка фри")
@@ -34,12 +29,17 @@ async def on_startup():
 async def on_shutdown():
     logger.info("Бот отключается...")
     
-
+    await loader.db.close()
 
     logger.info("БД отключена")
 
 
 async def main():
+
+    pool = await asyncpg.create_pool(DATABASE_URL)
+    
+    loader.db = Database(pool)
+    await loader.db.init_db()
 
     logging.basicConfig(
     level=logging.INFO,
