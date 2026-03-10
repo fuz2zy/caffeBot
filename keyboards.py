@@ -1,8 +1,31 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
+def get_menu_page_keyboard(category: str, num_product_in_category: int, quantity_in_cart: int):
+
+    if not quantity_in_cart:
+        buttons = [[InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data="add_to_cart")]]
+    else:
+        buttons = [
+            [
+                InlineKeyboardButton(text="-", callback_data="del_from_cart"), 
+                InlineKeyboardButton(text=f"🛒 | {quantity_in_cart}", callback_data="open_cart"),
+                InlineKeyboardButton(text="+", callback_data="add_to_cart")
+            ]
+        ]
+    
+    buttons.append([
+        InlineKeyboardButton(text="«Назад", callback_data=f"show_menu_page/{category}/{quantity_in_cart-1}/False"),
+        InlineKeyboardButton(text=f"☰{num_product_in_category}", callback_data=f"show_menu_page/{category}/{quantity_in_cart-1}/False"),
+        InlineKeyboardButton(text="Вперед»", callback_data=f"show_menu_page/{category}/{quantity_in_cart+1}/False")
+
+    ])
+
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
 start_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="Меню 📝", callback_data="show_menu/Фаст-Фуд/0/True")],
+    [InlineKeyboardButton(text="Меню 📝", callback_data="show_menu_page/Фаст-Фуд/0/True")],
     [InlineKeyboardButton(text="Корзина 🛒", callback_data="open_cart")],
     [InlineKeyboardButton(text="Помощь ❓", callback_data="get_help")],
     [InlineKeyboardButton(text="Наше приложение 📱", callback_data="open_mini_app")]

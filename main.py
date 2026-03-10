@@ -5,6 +5,7 @@ import loader
 
 from loader import bot, dp
 from database import Database
+from handlers.menu import menu_router
 from handlers.start import start_router
 from config import DATABASE_URL, LOG_PATH
 from middlewares.reg_middleware import RegisterMiddleware
@@ -29,7 +30,7 @@ async def on_startup():
 async def on_shutdown():
     logger.info("Бот отключается...")
     
-    await loader.db.close()
+    await loader.db.close_pool()
 
     logger.info("БД отключена")
 
@@ -51,7 +52,7 @@ async def main():
     )
     
     dp.include_router(start_router)
-
+    dp.include_router(menu_router)
 
     await dp.start_polling(bot)
 

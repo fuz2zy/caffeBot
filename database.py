@@ -6,7 +6,7 @@ class Database:
         self.pool = pool
 
     async def close_pool(self):
-        self.pool.close()
+        await self.pool.close()
 
 
     async def init_db(self):
@@ -157,6 +157,17 @@ class Database:
                         DELETE FROM cart_items
                         WHERE telegram_id = $1
     """, telegram_id)
+
+
+    async def get_product_total_in_cart_by_category(self, telegram_id: int, category: str) -> float:
+
+            result = await self.pool.fetchval("""
+                                        SELECT COUNT(*)
+                                        FROM cart_items c
+                                        JOIN products p ON p.id = c.product_id
+                                        WHERE c.telegram_id = $1 AND p.category = $2
+        """, telegram_id, category)
+            return int(result or 0)
 
 
     async def get_cart_total(self, telegram_id: int) -> float:
