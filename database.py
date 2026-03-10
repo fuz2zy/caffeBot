@@ -1,14 +1,15 @@
-import asyncpg
-
-from config import DATABASE_URL
-
 
 class Database:
 
+    def __init__(self, pool):
 
-    async def __init__(self):
+        self.pool = pool
 
-        self.pool = await asyncpg.create_pool(DATABASE_URL)
+    async def close_pool(self):
+        self.pool.close()
+
+
+    async def init_db(self):
 
         await self.pool.execute("""
             CREATE TABLE IF NOT EXISTS users (
