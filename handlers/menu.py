@@ -2,27 +2,43 @@ import logging
 import loader
 
 from aiogram import Router, F
-from aiogram.filters import Command
-from aiogram.types import Message, CallbackQuery, InputMediaPhoto, InputMediaVideo
+from aiogram.types import CallbackQuery, InputMediaPhoto, InputMediaVideo
 
 from keyboards import get_menu_page_keyboard
 
+#create router and logger
 menu_router = Router(name=__name__)
 logger = logging.getLogger(name=__name__)
 
-
+#registering the callback handler on call.data prefix "show_menu_page" 
+@menu_router.callback_query(F.data[:14]=="show_menu_page")
 async def get_menu_page(call: CallbackQuery):
     
+    # getting data from string of call.data where data is split by "/"
+    # where first arg is prefix, second arg is the product number in its category
+    # third arg is a flag indicating whether to delete the message 
+
     split_data = call.data.split("/")
 
     category = str(split_data[1])
-    num_product_in_category = int(split_data[2])
-    flag_delete_message = bool(split_data[3])
+    num_product_in_ctg = int(split_data[2])
+    flag_del_msg = bool(int(split_data[3]))
 
-    products_by_cur_category = await loader.db.get_products_by_category(category)
-    total_product_this_category_in_user_cart = await loader.db.get_product_total_in_cart_by_category(call.from_user.id, category)
-    cur_product = products_by_cur_category[num_product_in_category]
+    # making a query to the db to get list of products by category
+    # number of products with this category in user cart
+    products_by_cur_ctg = await loader.db.get_products_by_category(category)
+    num_products_this_ctg_in_crt = await loader.db.get_product_total_in_cart_by_category(call.from_user.id, category)
+    
+    # setting the boundaries of the product feed
+    if num_product_in_ctg > len(products_by_cur_ctg) - 1:
+        num_product_in_ctg = 0
+    elif num_product_in_ctg < 0:
+        num_product_in_ctg = len(products_by_cur_ctg) - 1
+    
+    # getting product page info by its number from list of products such category
+    cur_product = products_by_cur_ctg[num_product_in_ctg]
 
+    # create text of answer
     page_text = f"""
 <blockquote expandable>🍽️ {cur_product["name"]}
 💵 Стоимость: {cur_product["price"]} руб.
@@ -30,9 +46,11 @@ async def get_menu_page(call: CallbackQuery):
 {cur_product["description"]}
 </blockquote>"""
 
-    keyboard = get_menu_page_keyboard(category, num_product_in_category, total_product_this_category_in_user_cart)
+    # getting keyboard from keyboards.get_menu_page_keyboard 
+    keyboard = get_menu_page_keyboard(category, num_product_in_ctg, len(products_by_cur_ctg), num_products_this_ctg_in_crt)
 
-    if flag_delete_message or (not call.message.photo and not call.message.video):
+    # process different cases of media availability
+    if flag_del_msg or (not call.message.photo and not call.message.video):
         await call.message.delete()
         await call.message.answer_photo(photo=cur_product["telegram_id_image"], caption=page_text, reply_markup=keyboard)
 
@@ -41,6 +59,3 @@ async def get_menu_page(call: CallbackQuery):
 
     elif call.message.video:
         await call.message.edit_media(media=InputMediaVideo(media=cur_product["telegram_id_image"], caption=page_text), reply_markup=keyboard)
-
-
-menu_router.callback_query.register(get_menu_page, F.data[:14]=="show_menu_page")

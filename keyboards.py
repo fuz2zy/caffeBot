@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-def get_menu_page_keyboard(category: str, num_product_in_category: int, quantity_in_cart: int):
+def get_menu_page_keyboard(category: str, num_product_in_category: int, num_products_by_cur_category, quantity_in_cart: int):
 
     if not quantity_in_cart:
         buttons = [[InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data="add_to_cart")]]
@@ -15,9 +15,9 @@ def get_menu_page_keyboard(category: str, num_product_in_category: int, quantity
         ]
     
     buttons.append([
-        InlineKeyboardButton(text="«Назад", callback_data=f"show_menu_page/{category}/{quantity_in_cart-1}/False"),
-        InlineKeyboardButton(text=f"☰{num_product_in_category}", callback_data=f"show_menu_page/{category}/{quantity_in_cart-1}/False"),
-        InlineKeyboardButton(text="Вперед»", callback_data=f"show_menu_page/{category}/{quantity_in_cart+1}/False")
+        InlineKeyboardButton(text="«Назад", callback_data=f"show_menu_page/{category}/{num_product_in_category-1}/0"),
+        InlineKeyboardButton(text=f"☰ {num_product_in_category+1}/{num_products_by_cur_category}", callback_data=f"change_category"),
+        InlineKeyboardButton(text="Вперед»", callback_data=f"show_menu_page/{category}/{num_product_in_category+1}/0")
 
     ])
 
@@ -25,7 +25,7 @@ def get_menu_page_keyboard(category: str, num_product_in_category: int, quantity
 
 
 start_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="Меню 📝", callback_data="show_menu_page/Фаст-Фуд/0/True")],
+    [InlineKeyboardButton(text="Меню 📝", callback_data="show_menu_page/Фаст-Фуд/0/1")],
     [InlineKeyboardButton(text="Корзина 🛒", callback_data="open_cart")],
     [InlineKeyboardButton(text="Помощь ❓", callback_data="get_help")],
     [InlineKeyboardButton(text="Наше приложение 📱", callback_data="open_mini_app")]
