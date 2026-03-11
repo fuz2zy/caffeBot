@@ -12,7 +12,7 @@ logger = logging.getLogger(name=__name__)
 
 #registering the callback handler on call.data prefix "show_menu_page" 
 @menu_router.callback_query(F.data[:14]=="show_menu_page")
-async def get_menu_page(call: CallbackQuery):
+async def get_menu_page(call: CallbackQuery) -> None:
     
     # getting data from string of call.data where data is split by "/"
     # where first arg is prefix, second arg is the product number in its category

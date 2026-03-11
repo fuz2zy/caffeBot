@@ -1,8 +1,10 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+# func creates keyboard by args, 1: category of page, 2: product number in category
+# 3: quantity products in category, 4: quantity this product in user cart
+def get_menu_page_keyboard(category: str, num_product_in_ctg: int, quantity_product_in_ctg: int, quantity_in_cart: int) -> InlineKeyboardMarkup:
 
-def get_menu_page_keyboard(category: str, num_product_in_category: int, num_products_by_cur_category, quantity_in_cart: int):
-
+    # check if the user has in cart some product and create buttons based on result 
     if not quantity_in_cart:
         buttons = [[InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data="add_to_cart")]]
     else:
@@ -14,16 +16,18 @@ def get_menu_page_keyboard(category: str, num_product_in_category: int, num_prod
             ]
         ]
     
+    # append base buttons for change menu page
     buttons.append([
-        InlineKeyboardButton(text="«Назад", callback_data=f"show_menu_page/{category}/{num_product_in_category-1}/0"),
-        InlineKeyboardButton(text=f"☰ {num_product_in_category+1}/{num_products_by_cur_category}", callback_data=f"change_category"),
-        InlineKeyboardButton(text="Вперед»", callback_data=f"show_menu_page/{category}/{num_product_in_category+1}/0")
+        InlineKeyboardButton(text="«Назад", callback_data=f"show_menu_page/{category}/{num_product_in_ctg-1}/0"),
+        InlineKeyboardButton(text=f"☰ {num_product_in_ctg+1}/{quantity_product_in_ctg}", callback_data=f"change_category"),
+        InlineKeyboardButton(text="Вперед»", callback_data=f"show_menu_page/{category}/{num_product_in_ctg+1}/0")
 
     ])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
+# text and keyboard for command start
 start_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Меню 📝", callback_data="show_menu_page/Фаст-Фуд/0/1")],
     [InlineKeyboardButton(text="Корзина 🛒", callback_data="open_cart")],
