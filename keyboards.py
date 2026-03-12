@@ -17,14 +17,43 @@ def get_menu_page_keyboard(category: str, num_product_in_ctg: int, quantity_prod
         ]
     
     # append base buttons for change menu page
-    buttons.append([
-        InlineKeyboardButton(text="«Назад", callback_data=f"show_menu_page/{category}/{num_product_in_ctg-1}/0"),
-        InlineKeyboardButton(text=f"☰ {num_product_in_ctg+1}/{quantity_product_in_ctg}", callback_data=f"change_category"),
-        InlineKeyboardButton(text="Вперед»", callback_data=f"show_menu_page/{category}/{num_product_in_ctg+1}/0")
+    buttons.append(
+        [
+            InlineKeyboardButton(text="«Назад", callback_data=f"show_menu_page/{category}/{num_product_in_ctg-1}/0"),
+            InlineKeyboardButton(text=f"☰ {num_product_in_ctg+1}/{quantity_product_in_ctg}", callback_data=f"change_category"),
+            InlineKeyboardButton(text="Вперед»", callback_data=f"show_menu_page/{category}/{num_product_in_ctg+1}/0")
 
-    ])
+        ]
+    )
+
+    buttons.append([InlineKeyboardButton(text="🔙 Вернутся", callback_data="start_message")])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_cart_keyboard(user_cart) -> InlineKeyboardMarkup:
+    
+    buttons = []
+
+    for product in user_cart:
+
+        buttons.append([
+            InlineKeyboardButton(text=f"{product['name']} - {product['quantity']} шт.", callback_data="/"),
+            InlineKeyboardButton(text="✖️ Убрать", callback_data="/")
+        ])
+    
+    buttons.append([InlineKeyboardButton(text="✍🏻 Сделать заказ", callback_data="create_query")])
+    buttons.append([InlineKeyboardButton(text="🗑️ Очистить корзину", callback_data="clear_cart")])
+    buttons.append([InlineKeyboardButton(text="🔙 Вернутся", callback_data="start_message")])
+
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+empty_cart_keyboard= InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="Меню 📝", callback_data="show_menu_page/Фаст-Фуд/0/1")],
+    [InlineKeyboardButton(text="Помощь ❓", callback_data="get_help")],
+    [InlineKeyboardButton(text="Наше приложение 📱", callback_data="open_mini_app")], 
+    [InlineKeyboardButton(text="🔙 Вернутся", callback_data="start_message")]
+])
 
 
 # text and keyboard for command start

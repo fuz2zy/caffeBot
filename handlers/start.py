@@ -2,7 +2,7 @@ import logging
 
 from aiogram import Router, F
 from aiogram.filters import CommandStart
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from keyboards import start_message, start_keyboard
 
@@ -13,6 +13,13 @@ logger = logging.getLogger(name=__name__)
 async def on_cmd_start(message: Message):
 
     await message.answer(start_message, reply_markup=start_keyboard)
+
+
+@start_router.callback_query(F.data == "start_message")
+async def on_start_message(call: CallbackQuery):
+
+    await call.message.delete()
+    await call.message.answer(start_message, reply_markup=start_keyboard)
 
 
 @start_router.message(F.text)

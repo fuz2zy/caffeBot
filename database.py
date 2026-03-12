@@ -161,11 +161,18 @@ class Database:
 
     async def get_product_in_user_cart(self, telegram_id: int, product_id: int):
         
+        await self.pool.execute("""
+                        INSERT INTO cart_items (telegram_id, product_id, quantity)
+                        VALUES ($1, $2, 0)
+                        ON CONFLICT DO NOTHING
+    """, telegram_id, product_id)
+
         result = await self.pool.fetchrow("""
                         SELECT * 
                         FROM cart_items c
                         JOIN products p ON p.id = c.product_id
                         WHERE telegram_id = $1 AND product_id = $2
+                        
     """, telegram_id, product_id)
         
         return result
