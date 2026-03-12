@@ -8,3 +8,5 @@ from database import Database
 bot: Bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 dp: Dispatcher = Dispatcher(storage=MemoryStorage())
 db: Database | None = None
+
+users_last_actions = {}

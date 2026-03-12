@@ -159,15 +159,16 @@ class Database:
     """, telegram_id)
 
 
-    async def get_product_total_in_cart_by_category(self, telegram_id: int, category: str) -> float:
-
-            result = await self.pool.fetchval("""
-                                        SELECT COUNT(*)
-                                        FROM cart_items c
-                                        JOIN products p ON p.id = c.product_id
-                                        WHERE c.telegram_id = $1 AND p.category = $2
-        """, telegram_id, category)
-            return int(result or 0)
+    async def get_product_in_user_cart(self, telegram_id: int, product_id: int):
+        
+        result = await self.pool.fetchrow("""
+                        SELECT * 
+                        FROM cart_items c
+                        JOIN products p ON p.id = c.product_id
+                        WHERE telegram_id = $1 AND product_id = $2
+    """, telegram_id, product_id)
+        
+        return result
 
 
     async def get_cart_total(self, telegram_id: int) -> float:

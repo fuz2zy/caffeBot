@@ -2,17 +2,17 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # func creates keyboard by args, 1: category of page, 2: product number in category
 # 3: quantity products in category, 4: quantity this product in user cart
-def get_menu_page_keyboard(category: str, num_product_in_ctg: int, quantity_product_in_ctg: int, quantity_in_cart: int) -> InlineKeyboardMarkup:
+def get_menu_page_keyboard(category: str, num_product_in_ctg: int, quantity_product_in_ctg: int, quantity_in_cart: int, product_id: int) -> InlineKeyboardMarkup:
 
     # check if the user has in cart some product and create buttons based on result 
     if not quantity_in_cart:
-        buttons = [[InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data="add_to_cart")]]
+        buttons = [[InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data=f"add_to_cart/1/{product_id}/{category}/{num_product_in_ctg}")]]
     else:
         buttons = [
             [
-                InlineKeyboardButton(text="-", callback_data="del_from_cart"), 
+                InlineKeyboardButton(text="-", callback_data=f"add_to_cart/-1/{product_id}/{category}/{num_product_in_ctg}"), 
                 InlineKeyboardButton(text=f"🛒 | {quantity_in_cart}", callback_data="open_cart"),
-                InlineKeyboardButton(text="+", callback_data="add_to_cart")
+                InlineKeyboardButton(text="+", callback_data=f"add_to_cart/1/{product_id}/{category}/{num_product_in_ctg}")
             ]
         ]
     
