@@ -6,7 +6,7 @@ def get_menu_page_keyboard(category: str, num_product_in_ctg: int, quantity_prod
 
     # check if the user has in cart some product and create buttons based on result 
     if not quantity_in_cart:
-        buttons = [[InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data=f"add_to_cart/1/{product_id}/{category}/{num_product_in_ctg}")]]
+        buttons = [[InlineKeyboardButton(text="🛒 Добавить в корзину", callback_data=f"add_to_cart/1/{product_id}/{category}/{num_product_in_ctg}", style="success")]]
     else:
         buttons = [
             [
@@ -20,7 +20,7 @@ def get_menu_page_keyboard(category: str, num_product_in_ctg: int, quantity_prod
     buttons.append(
         [
             InlineKeyboardButton(text="«Назад", callback_data=f"show_menu_page/{category}/{num_product_in_ctg-1}/0"),
-            InlineKeyboardButton(text=f"☰ {num_product_in_ctg+1}/{quantity_product_in_ctg}", callback_data=f"change_category"),
+            InlineKeyboardButton(text=f"☰ {num_product_in_ctg+1}/{quantity_product_in_ctg}", callback_data=f"change_ctg/{category}"),
             InlineKeyboardButton(text="Вперед»", callback_data=f"show_menu_page/{category}/{num_product_in_ctg+1}/0")
 
         ]
@@ -31,16 +31,27 @@ def get_menu_page_keyboard(category: str, num_product_in_ctg: int, quantity_prod
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
+def get_categories_keyboard(cur_category: str, categories) -> InlineKeyboardMarkup:
+
+    buttons = []
+    for ctg in categories:
+        if ctg == cur_category:
+            buttons.append([InlineKeyboardButton(text=f"👉🏻{ctg}", callback_data=f"show_menu_page/{ctg}/0/1")])
+        else:
+            buttons.append([InlineKeyboardButton(text=f"{ctg}", callback_data=f"show_menu_page/{ctg}/0/1")])
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
 def get_cart_keyboard(user_cart) -> InlineKeyboardMarkup:
     
     buttons = []
 
     for product in user_cart:
-
-        buttons.append([
-            InlineKeyboardButton(text=f"{product['name']} - {product['quantity']} шт.", callback_data="/"),
-            InlineKeyboardButton(text="✖️ Убрать", callback_data="/")
-        ])
+        if product["quantity"] > 0:
+            buttons.append([
+                InlineKeyboardButton(text=f"{product['name']} - {product['quantity']} шт.", callback_data="/"),
+                InlineKeyboardButton(text="✖️ Убрать", callback_data=f"remove_from_cart/{product['id']}/{product['quantity']}")
+            ])
     
     buttons.append([InlineKeyboardButton(text="✍🏻 Сделать заказ", callback_data="create_query")])
     buttons.append([InlineKeyboardButton(text="🗑️ Очистить корзину", callback_data="clear_cart")])

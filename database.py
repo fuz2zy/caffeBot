@@ -123,10 +123,16 @@ class Database:
         )
 
 
+    async def get_categories(self):
+        rows = await self.pool.fetch(
+            "SELECT DISTINCT category FROM products WHERE available = TRUE"
+        )
+        return [rows[row]["category"] for row in range(len(rows))]
+
     async def get_cart(self, telegram_id: int):
 
         return await self.pool.fetch("""
-                                SELECT p.name, p.price, c.quantity, (p.price * c.quantity) AS total
+                                SELECT p.id, p.name, p.price, c.quantity, (p.price * c.quantity) AS total
                                 FROM cart_items c
                                 JOIN products p ON p.id = c.product_id
                                 WHERE c.telegram_id = $1

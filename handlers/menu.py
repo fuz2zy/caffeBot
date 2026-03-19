@@ -4,11 +4,28 @@ import loader
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, InputMediaPhoto, InputMediaVideo
 
-from keyboards import get_menu_page_keyboard
+from keyboards import get_menu_page_keyboard, get_categories_keyboard
 
 # create router and logger
 menu_router = Router(name=__name__)
 logger = logging.getLogger(name=__name__)
+
+
+@menu_router.callback_query(F.data[:10] == "change_ctg")
+async def on_change_ctg(call: CallbackQuery):
+
+    split_data = call.data.split("/")
+
+    category = split_data[1]
+
+    categories = await loader.db.get_categories()
+
+    answer_text = "<b>📝 Выберите ниже категорию</b>"
+    keyboard = get_categories_keyboard(category, categories)
+
+    await call.message.delete()
+    await call.message.answer(text=answer_text, reply_markup=keyboard)
+
 
 # registering the callback handler on call.data prefix "show_menu_page" 
 @menu_router.callback_query(F.data[:14]=="show_menu_page")
