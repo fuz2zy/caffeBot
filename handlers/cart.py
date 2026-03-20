@@ -11,7 +11,7 @@ cart_router = Router()
 logger = logging.getLogger(name=__name__)
 
 
-def get_cart_text(user_cart):
+def get_cart_text(user_cart) -> tuple[str, int]:
 
     total_sum = 0
     answer_text = """
@@ -108,3 +108,13 @@ async def on_remove_from_cart(call: CallbackQuery):
     else:
         await call.message.edit_text(answer_text, reply_markup=keyboard)
 
+
+
+@cart_router.callback_query(F.data == "clear_cart")
+async def on_clear_cart(call: CallbackQuery):
+
+    user_id = call.from_user.id
+
+    await loader.db.clear_cart(user_id)
+
+    await call.message.edit_text(text="<blockquote>🛒 Ваша корзина пуста</blockquote>\n <b>Выберите кнопку ниже</b>", reply_markup=empty_cart_keyboard)

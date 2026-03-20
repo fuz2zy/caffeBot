@@ -1,9 +1,12 @@
+import logging
+
 
 class Database:
 
     def __init__(self, pool):
 
         self.pool = pool
+        self.logger = logging.getLogger(name=__name__)
 
     async def close_pool(self):
         await self.pool.close()
@@ -17,6 +20,7 @@ class Database:
                 username TEXT,
                 first_name TEXT,
                 last_name TEXT,
+                phone TEXT DEFAULT '',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -69,6 +73,23 @@ class Database:
         return await self.pool.fetch(
             "SELECT * FROM users "
         )
+
+
+    async def get_user_phone(self, user_id: int) -> str:
+
+        result = await self.pool.fetchval(
+            "SELECT phone FROM users WHERE id = $1", user_id
+        )
+
+        return str(result)
+
+
+    async def add_user_phone(self, user_id: int, phone: str) -> None:
+        await self.pool.execute(
+            "UPDATE users SET phone = $2 WHERE id = $1", user_id, phone
+        )
+        self.logger.info(f"USER (id = {user_id}) verified his number (phone = {phone})")
+
 
 
     async def add_product(self, name: str, price: float, category: str, telegram_id_image: str, description: str = 'Описание товара отсутсвует'):

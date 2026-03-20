@@ -8,6 +8,7 @@ from database import Database
 from handlers.menu import menu_router
 from handlers.cart import cart_router
 from handlers.start import start_router
+from handlers.order import order_router
 from config import DATABASE_URL, LOG_PATH
 from middlewares.reg_middleware import RegisterMiddleware
 from middlewares.antispam_middleware import AntisamMiddleware
@@ -59,8 +60,10 @@ async def main() -> None:
     )
     
     dp.include_router(start_router)
+    dp.include_router(order_router)
     dp.include_router(menu_router)
     dp.include_router(cart_router)
+
 
     await dp.start_polling(bot)
 

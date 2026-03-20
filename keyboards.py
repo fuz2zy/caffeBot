@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 
 # func creates keyboard by args, 1: category of page, 2: product number in category
 # 3: quantity products in category, 4: quantity this product in user cart
@@ -53,7 +53,7 @@ def get_cart_keyboard(user_cart) -> InlineKeyboardMarkup:
                 InlineKeyboardButton(text="✖️ Убрать", callback_data=f"remove_from_cart/{product['id']}/{product['quantity']}")
             ])
     
-    buttons.append([InlineKeyboardButton(text="✍🏻 Сделать заказ", callback_data="create_query")])
+    buttons.append([InlineKeyboardButton(text="✍🏻 Сделать заказ", callback_data="create_order")])
     buttons.append([InlineKeyboardButton(text="🗑️ Очистить корзину", callback_data="clear_cart")])
     buttons.append([InlineKeyboardButton(text="🔙 Вернутся", callback_data="start_message")])
 
@@ -66,6 +66,14 @@ empty_cart_keyboard= InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="🔙 Вернутся", callback_data="start_message")]
 ])
 
+
+verifi_phone_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Поделится номером", request_contact=True)]
+    ],
+    resize_keyboard=True,
+    one_time_keyboard=True
+)
 
 # text and keyboard for command start
 start_keyboard = InlineKeyboardMarkup(inline_keyboard=[
